@@ -99,7 +99,7 @@ where
         let mut sm = self.id;
         loop {
             r -= 1;
-            while r > 1 && r % 2 == 0 {
+            while r > 1 && r % 2 == 1 {
                 r >>= 1;
             }
             if !func((self.op)(self.d[r], sm)) {
