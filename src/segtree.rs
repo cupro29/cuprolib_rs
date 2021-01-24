@@ -22,6 +22,21 @@ where
             id,
         }
     }
+    pub fn from_vec(v: &[T], id: T, op: F) -> Self {
+        let n = v.len();
+        let mut lg = 0;
+        while 1 << lg < n {
+            lg += 1;
+        }
+        let sz = 1 << lg;
+        let mut d = vec![id; sz * 2];
+        d[sz..(sz + n)].clone_from_slice(&v);
+        let mut res = Segtree { n, sz, d, op, id };
+        for i in (1..sz).rev() {
+            res.update(i);
+        }
+        res
+    }
     pub fn set(&mut self, p: usize, x: T) {
         assert!(p < self.n);
         let mut q = p + self.sz;
@@ -59,7 +74,10 @@ where
     pub fn all_prod(&self) -> T {
         self.d[1].clone()
     }
-    pub fn max_right(&self, left: usize, func: impl Fn(T) -> bool) -> usize {
+    pub fn max_right<G>(&self, left: usize, func: G) -> usize
+    where
+        G: Fn(T) -> bool,
+    {
         assert!(left <= self.n);
         assert!(func(self.id));
         if left == self.n {
@@ -89,7 +107,10 @@ where
         }
         self.n
     }
-    pub fn min_left(&self, right: usize, func: impl Fn(T) -> bool) -> usize {
+    pub fn min_left<G>(&self, right: usize, func: G) -> usize
+    where
+        G: Fn(T) -> bool,
+    {
         assert!(right <= self.n);
         assert!(func(self.id));
         if right == 0 {
