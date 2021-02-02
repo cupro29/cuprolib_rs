@@ -9,20 +9,10 @@ impl<T: Copy, F> Segtree<T, F>
 where
     F: Fn(T, T) -> T,
 {
-    pub fn new(n: usize, id: T, op: F) -> Self {
-        let mut lg = 0;
-        while 1 << lg < n {
-            lg += 1;
-        }
-        Self {
-            n,
-            sz: 1 << lg,
-            d: vec![id; 2 << lg],
-            op,
-            id,
-        }
+    pub fn new(n: usize, op: F, id: T) -> Self {
+        Segtree::from_vec(&vec![id; n], op, id)
     }
-    pub fn from_vec(v: &[T], id: T, op: F) -> Self {
+    pub fn from_vec(v: &[T], op: F, id: T) -> Self {
         let n = v.len();
         let mut lg = 0;
         while 1 << lg < n {
