@@ -1,5 +1,7 @@
 pub mod segtree;
 pub mod unionfind;
+pub mod lazysegtree;
+pub mod BIT;
 #[cfg(test)]
 mod tests {
     #[test]

@@ -1,4 +1,4 @@
-pub struct LazySegree<S, T, F, G, H> {
+pub struct LazySegtree<S, T, F, G, H> {
     n: usize,
     sz: usize,
     lg: usize,
@@ -10,7 +10,7 @@ pub struct LazySegree<S, T, F, G, H> {
     composition: H,
     id: T,
 }
-impl<S, T, F, G, H> LazySegree<S, T, F, G, H>
+impl<S, T, F, G, H> LazySegtree<S, T, F, G, H>
 where
     S: Copy,
     T: Copy,
