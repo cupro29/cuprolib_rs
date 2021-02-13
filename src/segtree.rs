@@ -5,8 +5,9 @@ pub struct Segtree<T, F> {
     op: F,
     id: T,
 }
-impl<T: Copy, F> Segtree<T, F>
+impl<T, F> Segtree<T, F>
 where
+    T: Copy,
     F: Fn(T, T) -> T,
 {
     pub fn new(n: usize, op: F, id: T) -> Self {
