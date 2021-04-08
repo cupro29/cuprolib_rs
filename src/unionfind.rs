@@ -46,16 +46,3 @@ impl UnionFind {
         }
     }
 }
-
-// #[cfg(test)]
-// mod tests {
-//     use super::UnionFind;
-
-//     #[test]
-//     fn test_union_find() {
-//         let mut uf = UnionFind::new(10);
-//         uf.merge(1, 2);
-//         uf.merge(2, 3);
-//         assert_eq!(uf.same(1, 3), true);
-//     }
-// }
