@@ -1,37 +1,45 @@
-type Cap = i32;
+use num_traits::NumAssign;
+use std::cmp::min;
+use std::collections::VecDeque;
 #[derive(Debug, Clone)]
-struct MfEdge {
-    pub to: usize,
-    pub cap: Cap,
-    pub rev: usize,
+pub struct MaxFlowEdge<Cap> {
+    to: usize,
+    rev: usize,
+    cap: Cap,
 }
-struct MfGraph {
-    pub n: usize,
-    pub g: Vec<Vec<MfEdge>>,
+struct MaxFlowGraph<Cap> {
+    n: usize,
+    g: Vec<Vec<MaxFlowEdge<Cap>>>,
+    pos: Vec<(usize, usize)>,
 }
-impl MfGraph {
+impl<Cap> MaxFlowGraph<Cap>
+where
+    Cap: NumAssign + Ord + Copy,
+{
     pub fn new(n: usize) -> Self {
         Self {
             n,
             g: vec![vec![]; n],
+            pos: vec![],
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: Cap) {
-        let from_len = self.g[from].len();
+        let from_len = self.g[from].len() + (if from == to { 1 } else { 0 });
         let to_len = self.g[to].len();
-        self.g[from].push(MfEdge {
-            to: to,
-            cap: cap,
+        self.pos.push((from, to_len));
+        self.g[from].push(MaxFlowEdge {
+            to,
             rev: to_len,
+            cap,
         });
-        self.g[to].push(MfEdge {
+        self.g[to].push(MaxFlowEdge {
             to: from,
-            cap: 0,
             rev: from_len,
+            cap: Cap::zero(),
         });
     }
     pub fn maxflow(&mut self, s: usize, t: usize, flow_limit: Cap) -> Cap {
-        let mut flow = 0;
+        let mut flow = Cap::zero();
         loop {
             let mut level = vec![-1; self.n];
             self.bfs(s, &mut level);
@@ -41,7 +49,7 @@ impl MfGraph {
             let mut iter = vec![0; self.n];
             while flow < flow_limit {
                 let f = self.dfs(s, t, flow_limit - flow, &mut iter, &level);
-                if f == 0 {
+                if f == Cap::zero() {
                     break;
                 }
                 flow += f;
@@ -50,12 +58,12 @@ impl MfGraph {
         flow
     }
     fn bfs(&self, s: usize, level: &mut Vec<i32>) {
-        let mut que = std::collections::VecDeque::new();
+        let mut que = VecDeque::new();
         level[s] = 0;
         que.push_back(s);
         while let Some(v) = que.pop_front() {
             for e in self.g[v].iter() {
-                if e.cap > 0 && level[e.to] < 0 {
+                if e.cap > Cap::zero() && level[e.to] < 0 {
                     level[e.to] = level[v] + 1;
                     que.push_back(e.to);
                 }
@@ -68,9 +76,9 @@ impl MfGraph {
         }
         for i in iter[v]..self.g[v].len() {
             let e = self.g[v][i].clone();
-            if e.cap > 0 && level[v] + 1 == level[e.to] {
-                let d = self.dfs(e.to, t, std::cmp::min(up, e.cap), iter, level);
-                if d > 0 {
+            if e.cap > Cap::zero() && level[v] + 1 == level[e.to] {
+                let d = self.dfs(e.to, t, min(up, e.cap), iter, level);
+                if d > Cap::zero() {
                     self.g[v][i].cap -= d;
                     let to = self.g[v][i].to;
                     let rev = self.g[v][i].rev;
@@ -79,6 +87,6 @@ impl MfGraph {
                 }
             }
         }
-        0
+        Cap::zero()
     }
 }
