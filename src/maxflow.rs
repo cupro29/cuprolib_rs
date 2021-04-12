@@ -1,5 +1,4 @@
 use num_traits::NumAssign;
-use std::cmp::min;
 use std::collections::VecDeque;
 #[derive(Debug, Clone)]
 pub struct MaxFlowEdge<Cap> {
@@ -77,7 +76,7 @@ where
         for i in iter[v]..self.g[v].len() {
             let e = self.g[v][i].clone();
             if e.cap > Cap::zero() && level[v] + 1 == level[e.to] {
-                let d = self.dfs(e.to, t, min(up, e.cap), iter, level);
+                let d = self.dfs(e.to, t, up.min(e.cap), iter, level);
                 if d > Cap::zero() {
                     self.g[v][i].cap -= d;
                     let to = self.g[v][i].to;
