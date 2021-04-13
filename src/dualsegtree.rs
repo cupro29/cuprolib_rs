@@ -1,59 +1,52 @@
-pub struct DualSegtree<S, T, F, G> {
+pub struct DualSegtree<T, F> {
     n: usize,
     sz: usize,
     lg: usize,
-    d: Vec<S>,
-    lz: Vec<T>,
-    mapping: F,
-    composition: G,
+    d: Vec<T>,
+    op: F,
     id: T,
 }
-impl<S, T, F, G> DualSegtree<S, T, F, G>
+impl<T, F> DualSegtree<T, F>
 where
-    S: Copy + Default,
-    T: Copy,
-    F: Fn(T, S) -> S,
-    G: Fn(T, T) -> T,
+    T: Copy + PartialEq,
+    F: Fn(T, T) -> T,
 {
-    pub fn new(n: usize, mapping: F, composition: G, id: T) -> Self {
-        DualSegtree::from_vec(&vec![S::default(); n], mapping, composition, id)
+    pub fn new(n: usize, op: F, id: T) -> Self {
+        DualSegtree::from_vec(&vec![id; n], op, id)
     }
-    pub fn from_vec(v: &[S], mapping: F, composition: G, id: T) -> Self {
+    pub fn from_vec(v: &[T], op: F, id: T) -> Self {
         let n = v.len();
         let mut lg = 0;
         while 1 << lg < n {
             lg += 1;
         }
         let sz = 1 << lg;
-        let mut d = vec![S::default(); sz];
-        let lz = vec![id; sz];
-        d[0..n].clone_from_slice(&v);
+        let mut d = vec![id; sz * 2];
+        d[sz..(sz + n)].clone_from_slice(&v);
         Self {
             n,
             sz,
             lg,
             d,
-            lz,
-            mapping,
-            composition,
+            op,
             id,
         }
     }
-    pub fn set(&mut self, index: usize, x: S) {
+    pub fn set(&mut self, index: usize, x: T) {
         assert!(index < self.n);
         let p = index + self.sz;
-        for i in (1..=self.lg).rev() {
+        for i in (1..self.lg).rev() {
             self.push(p >> i);
         }
-        self.d[index] = x;
+        self.d[p] = x;
     }
-    pub fn get(&mut self, index: usize) -> S {
+    pub fn get(&mut self, index: usize) -> T {
         assert!(index < self.n);
         let p = index + self.sz;
-        for i in (1..=self.lg).rev() {
+        for i in (1..self.lg).rev() {
             self.push(p >> i);
         }
-        self.d[index]
+        self.d[p]
     }
     pub fn apply(&mut self, index: usize, f: T) {
         assert!(index < self.n);
@@ -61,7 +54,7 @@ where
         for i in (1..self.lg).rev() {
             self.push(p >> i);
         }
-        self.d[index] = (self.mapping)(f, self.d[index]);
+        self.d[p] = (self.op)(f, self.d[p]);
     }
     pub fn range_apply(&mut self, left: usize, right: usize, f: T) {
         assert!(left <= right);
@@ -93,15 +86,13 @@ where
         }
     }
     fn all_apply(&mut self, k: usize, f: T) {
-        if k < self.sz {
-            self.lz[k] = (self.composition)(f, self.lz[k]);
-        } else {
-            self.d[k - self.sz] = (self.mapping)(f, self.d[k - self.sz]);
-        }
+        self.d[k] = (self.op)(f, self.d[k]);
     }
     fn push(&mut self, k: usize) {
-        self.all_apply(2 * k, self.lz[k]);
-        self.all_apply(2 * k + 1, self.lz[k]);
-        self.lz[k] = self.id;
+        if self.d[k] != self.id {
+            self.all_apply(2 * k, self.d[k]);
+            self.all_apply(2 * k + 1, self.d[k]);
+            self.d[k] = self.id;
+        }
     }
 }
