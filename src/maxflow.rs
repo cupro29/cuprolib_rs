@@ -6,7 +6,7 @@ pub struct MaxFlowEdge<Cap> {
     rev: usize,
     cap: Cap,
 }
-struct MaxFlowGraph<Cap> {
+pub struct MaxFlowGraph<Cap> {
     n: usize,
     g: Vec<Vec<MaxFlowEdge<Cap>>>,
     pos: Vec<(usize, usize)>,

@@ -2,6 +2,7 @@ pub mod binaryindexedtree;
 pub mod dualsegtree;
 pub mod lazysegtree;
 pub mod maxflow;
+pub mod mincostflow;
 pub mod segtree;
 pub mod unionfind;
 #[cfg(test)]
