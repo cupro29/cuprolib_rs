@@ -50,7 +50,7 @@ where
                 }
                 for i in 0..self.g[v].len() {
                     let e = &self.g[v][i];
-                    if e.cap > T::zero() && dist[v] > dist[v] + e.cost + h[v] - h[e.to] {
+                    if e.cap > T::zero() && dist[e.to] > dist[v] + e.cost + h[v] - h[e.to] {
                         dist[e.to] = dist[v] + e.cost + h[v] - h[e.to];
                         prevv[e.to] = v;
                         preve[e.to] = i;
