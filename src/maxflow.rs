@@ -23,8 +23,8 @@ where
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: Cap) {
-        let from_len = self.g[from].len() + (if from == to { 1 } else { 0 });
-        let to_len = self.g[to].len();
+        let from_len = self.g[from].len();
+        let to_len = self.g[to].len() + (if from == to { 1 } else { 0 });
         self.pos.push((from, to_len));
         self.g[from].push(MaxFlowEdge {
             to,
