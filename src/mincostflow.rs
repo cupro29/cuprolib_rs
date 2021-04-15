@@ -24,6 +24,9 @@ where
         }
     }
     pub fn add_edge(&mut self, from: usize, to: usize, cap: T, cost: U) {
+        assert!(from < self.n);
+        assert!(to < self.n);
+        assert!(cost >= U::zero());
         let rev = self.g[to].len() + (if from == to { 1 } else { 0 });
         self.g[from].push(MinCostFlowEdge { to, rev, cap, cost });
         let rev = self.g[from].len() - 1;
@@ -35,6 +38,8 @@ where
         })
     }
     pub fn min_cost_flow(&mut self, s: usize, t: usize, mut flow_limit: T) -> U {
+        assert!(s < self.n);
+        assert!(t < self.n);
         let mut res = U::zero();
         let mut h = vec![U::zero(); self.n];
         let mut prevv = vec![s; self.n];
