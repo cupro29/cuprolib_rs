@@ -78,9 +78,11 @@ where
         self.pos.push((src, re));
     }
     pub fn add_supply(&mut self, v: usize, amount: Flow) {
+        assert!(v < self.n);
         self.b[v] += amount;
     }
     pub fn add_demand(&mut self, v: usize, amount: Flow) {
+        assert!(v < self.n);
         self.b[v] -= amount;
     }
     pub fn solve(&mut self) -> Cost {
