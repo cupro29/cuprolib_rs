@@ -3,6 +3,7 @@ pub mod dualsegtree;
 pub mod lazysegtree;
 pub mod maxflow;
 pub mod mincostflow;
+pub mod mincostflow_capacity_scaling;
 pub mod segtree;
 pub mod unionfind;
 #[cfg(test)]
