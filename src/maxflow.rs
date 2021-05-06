@@ -73,9 +73,11 @@ where
         if v == t {
             return up;
         }
-        for i in iter[v]..self.g[v].len() {
+        let s = iter[v];
+        for i in s..self.g[v].len() {
+            iter[v] += 1;
             let e = self.g[v][i].clone();
-            if e.cap > Cap::zero() && level[v] + 1 == level[e.to] {
+            if e.cap > Cap::zero() && level[v] < level[e.to] {
                 let d = self.dfs(e.to, t, up.min(e.cap), iter, level);
                 if d > Cap::zero() {
                     self.g[v][i].cap -= d;
