@@ -35,7 +35,7 @@ where
     pub fn set(&mut self, index: usize, x: T) {
         assert!(index < self.n);
         let p = index + self.sz;
-        for i in (1..self.lg).rev() {
+        for i in (1..=self.lg).rev() {
             self.push(p >> i);
         }
         self.d[p] = x;
@@ -43,7 +43,7 @@ where
     pub fn get(&mut self, index: usize) -> T {
         assert!(index < self.n);
         let p = index + self.sz;
-        for i in (1..self.lg).rev() {
+        for i in (1..=self.lg).rev() {
             self.push(p >> i);
         }
         self.d[p]
@@ -51,7 +51,7 @@ where
     pub fn apply(&mut self, index: usize, f: T) {
         assert!(index < self.n);
         let p = index + self.sz;
-        for i in (1..self.lg).rev() {
+        for i in (1..=self.lg).rev() {
             self.push(p >> i);
         }
         self.d[p] = (self.op)(f, self.d[p]);
@@ -64,7 +64,7 @@ where
         }
         let mut l = left + self.sz;
         let mut r = right + self.sz;
-        for i in (1..self.lg).rev() {
+        for i in (1..=self.lg).rev() {
             if ((l >> i) << i) != l {
                 self.push(l >> i);
             }
