@@ -39,7 +39,7 @@ where
     }
     pub fn maxflow(&mut self, s: usize, t: usize, flow_limit: Cap) -> Cap {
         let mut flow = Cap::zero();
-        loop {
+        while flow < flow_limit {
             let mut level = vec![-1; self.n];
             self.bfs(s, &mut level);
             if level[t] < 0 {
