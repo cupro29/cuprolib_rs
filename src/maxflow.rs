@@ -1,14 +1,14 @@
 use num_traits::NumAssign;
 use std::collections::VecDeque;
 #[derive(Debug, Clone)]
-pub struct MaxFlowEdge<Cap> {
+pub struct _Edge<Cap> {
     to: usize,
     rev: usize,
     cap: Cap,
 }
 pub struct MaxFlowGraph<Cap> {
     n: usize,
-    g: Vec<Vec<MaxFlowEdge<Cap>>>,
+    g: Vec<Vec<_Edge<Cap>>>,
     pos: Vec<(usize, usize)>,
 }
 impl<Cap> MaxFlowGraph<Cap>
@@ -26,12 +26,12 @@ where
         let from_len = self.g[from].len();
         let to_len = self.g[to].len() + (if from == to { 1 } else { 0 });
         self.pos.push((from, to_len));
-        self.g[from].push(MaxFlowEdge {
+        self.g[from].push(_Edge {
             to,
             rev: to_len,
             cap,
         });
-        self.g[to].push(MaxFlowEdge {
+        self.g[to].push(_Edge {
             to: from,
             rev: from_len,
             cap: Cap::zero(),
