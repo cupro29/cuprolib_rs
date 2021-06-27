@@ -1,7 +1,13 @@
 use num_traits::NumAssign;
 use std::collections::VecDeque;
 #[derive(Debug, Clone)]
-pub struct _Edge<Cap> {
+pub struct MaxFlowEdge<Cap> {
+    pub from: usize,
+    pub to: usize,
+    pub flow: Cap,
+}
+#[derive(Debug, Clone)]
+struct _Edge<Cap> {
     to: usize,
     rev: usize,
     cap: Cap,
@@ -25,7 +31,7 @@ where
     pub fn add_edge(&mut self, from: usize, to: usize, cap: Cap) {
         let from_len = self.g[from].len();
         let to_len = self.g[to].len() + (if from == to { 1 } else { 0 });
-        self.pos.push((from, to_len));
+        self.pos.push((from, from_len));
         self.g[from].push(_Edge {
             to,
             rev: to_len,
@@ -55,6 +61,18 @@ where
             }
         }
         flow
+    }
+    pub fn edges(&self) -> Vec<MaxFlowEdge<Cap>> {
+        let get_edge = |from: usize, e: usize| {
+            let to = self.g[from][e].to;
+            let rev = self.g[from][e].rev;
+            let flow = self.g[to][rev].cap;
+            MaxFlowEdge { from, to, flow }
+        };
+        self.pos
+            .iter()
+            .map(|&(from, e)| get_edge(from, e))
+            .collect()
     }
     fn bfs(&self, s: usize, level: &mut Vec<i32>) {
         let mut que = VecDeque::new();
