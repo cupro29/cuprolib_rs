@@ -37,7 +37,7 @@ where
             cost: cost.neg(),
         })
     }
-    pub fn min_cost_flow(&mut self, s: usize, t: usize, mut flow_limit: T) -> U {
+    pub fn min_cost_flow(&mut self, s: usize, t: usize, mut flow_limit: T) -> Option<U> {
         assert!(s < self.n);
         assert!(t < self.n);
         let mut res = U::zero();
@@ -64,7 +64,7 @@ where
                 }
             }
             if dist[t] == U::max_value() {
-                return U::one().neg();
+                return None;
             }
             for i in 0..self.n {
                 h[i] += dist[i];
@@ -89,6 +89,6 @@ where
                 }
             }
         }
-        res
+        Some(res)
     }
 }
