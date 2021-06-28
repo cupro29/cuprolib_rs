@@ -3,14 +3,23 @@ use num_traits::NumAssign;
 use std::{cmp::Reverse, collections::BinaryHeap};
 #[derive(Debug, Clone)]
 pub struct MinCostFlowEdge<Flow, Cost> {
-    src: usize,
-    dst: usize,
+    pub from: usize,
+    pub to: usize,
+    pub flow: Flow,
+    pub upper: Flow,
+    pub lower: Flow,
+    pub cost: Cost,
+}
+#[derive(Debug, Clone)]
+struct _Edge<Flow, Cost> {
+    from: usize,
+    to: usize,
     flow: Flow,
     cap: Flow,
     cost: Cost,
     rev: usize,
 }
-impl<Flow, Cost> MinCostFlowEdge<Flow, Cost>
+impl<Flow, Cost> _Edge<Flow, Cost>
 where
     Flow: PrimInt,
     Cost: PrimInt,
@@ -18,21 +27,12 @@ where
     pub fn residual_cap(&self) -> Flow {
         self.cap - self.flow
     }
-    pub fn src(&self) -> usize {
-        self.src
-    }
-    pub fn dst(&self) -> usize {
-        self.dst
-    }
-    pub fn flow(&self) -> Flow {
-        self.flow
-    }
 }
 pub struct MinCostFlowGraph<Flow, Cost> {
     n: usize,
-    g: Vec<Vec<MinCostFlowEdge<Flow, Cost>>>,
+    g: Vec<Vec<_Edge<Flow, Cost>>>,
     b: Vec<Flow>,
-    poterntial: Vec<Cost>,
+    potential: Vec<Cost>,
     dist: Vec<Cost>,
     parent: Vec<Option<(usize, usize)>>,
     pos: Vec<(usize, usize)>,
@@ -47,35 +47,35 @@ where
             n,
             g: vec![vec![]; n],
             b: vec![Flow::zero(); n],
-            poterntial: vec![Cost::zero(); n],
+            potential: vec![Cost::zero(); n],
             dist: vec![Cost::max_value(); n],
             parent: vec![None; n],
             pos: vec![],
         }
     }
-    pub fn add_edge(&mut self, src: usize, dst: usize, lower: Flow, upper: Flow, cost: Cost) {
-        assert!(src < self.n);
-        assert!(dst < self.n);
+    pub fn add_edge(&mut self, from: usize, to: usize, lower: Flow, upper: Flow, cost: Cost) {
+        assert!(from < self.n);
+        assert!(to < self.n);
         assert!(lower <= upper);
-        let e = self.g[src].len();
-        let re = if src == dst { e + 1 } else { self.g[dst].len() };
-        self.g[src].push(MinCostFlowEdge {
-            src: src,
-            dst: dst,
+        let e = self.g[from].len();
+        let re = if from == to { e + 1 } else { self.g[to].len() };
+        self.g[from].push(_Edge {
+            from: from,
+            to: to,
             flow: Flow::zero(),
             cap: upper,
             cost: cost,
             rev: re,
         });
-        self.g[dst].push(MinCostFlowEdge {
-            src: dst,
-            dst: src,
+        self.g[to].push(_Edge {
+            from: to,
+            to: from,
             flow: Flow::zero(),
             cap: lower.neg(),
             cost: cost.neg(),
             rev: e,
         });
-        self.pos.push((src, re));
+        self.pos.push((from, e));
     }
     pub fn add_supply(&mut self, v: usize, amount: Flow) {
         assert!(v < self.n);
@@ -85,16 +85,16 @@ where
         assert!(v < self.n);
         self.b[v] -= amount;
     }
-    pub fn solve(&mut self) -> Cost {
+    pub fn solve(&mut self) -> Result<Cost, Cost> {
         for v in 0..self.g.len() {
             for e in 0..self.g[v].len() {
                 let rcap = self.g[v][e].residual_cap();
                 if rcap < Flow::zero() {
                     self.push(v, e, rcap);
-                    let src = self.g[v][e].src();
-                    let dst = self.g[v][e].dst();
-                    self.b[src] -= rcap;
-                    self.b[dst] += rcap;
+                    let from = self.g[v][e].from;
+                    let to = self.g[v][e].to;
+                    self.b[from] -= rcap;
+                    self.b[to] += rcap;
                 }
             }
         }
@@ -109,19 +109,21 @@ where
             delta = delta << 1;
         }
         delta = delta >> 1;
+        let mut excess_vs = vec![];
+        let mut deficit_vs = vec![];
         while delta > Flow::zero() {
-            let mut excess_vs = vec![];
-            let mut deficit_vs = vec![];
+            excess_vs.clear();
+            deficit_vs.clear();
             for v in 0..self.g.len() {
                 for e in 0..self.g[v].len() {
                     let rcap = self.g[v][e].residual_cap();
                     let rcost = self.residual_cost(v, e);
                     if rcost < Cost::zero() && rcap >= delta {
                         self.push(v, e, rcap);
-                        let src = self.g[v][e].src;
-                        let dst = self.g[v][e].dst;
-                        self.b[src] -= rcap;
-                        self.b[dst] += rcap;
+                        let from = self.g[v][e].from;
+                        let to = self.g[v][e].to;
+                        self.b[from] -= rcap;
+                        self.b[to] += rcap;
                     }
                 }
             }
@@ -143,18 +145,46 @@ where
                 value += self.g[v][e].cost * std::convert::From::from(self.g[v][e].flow);
             }
         }
-        value >> 1
+        if excess_vs.is_empty() && deficit_vs.is_empty() {
+            Ok(value >> 1)
+        } else {
+            Err(value >> 1)
+        }
+    }
+    pub fn edges(&self) -> Vec<MinCostFlowEdge<Flow, Cost>> {
+        let get_edge = |from: usize, e: usize| {
+            let to = self.g[from][e].to;
+            let flow = self.g[from][e].flow;
+            let upper = self.g[from][e].cap;
+            let lower = self.g[to][self.g[from][e].rev].cap;
+            let cost = self.g[from][e].cost;
+            MinCostFlowEdge {
+                from,
+                to,
+                flow,
+                upper,
+                lower,
+                cost,
+            }
+        };
+        self.pos
+            .iter()
+            .map(|&(from, e)| get_edge(from, e))
+            .collect()
+    }
+    pub fn potential(&self) -> Vec<Cost> {
+        self.potential.clone()
     }
     fn push(&mut self, v: usize, e: usize, amount: Flow) {
         self.g[v][e].flow += amount;
-        let dst = self.g[v][e].dst;
+        let to = self.g[v][e].to;
         let rev = self.g[v][e].rev;
-        self.g[dst][rev].flow -= amount;
+        self.g[to][rev].flow -= amount;
     }
     fn residual_cost(&self, v: usize, e: usize) -> Cost {
-        let src = self.g[v][e].src;
-        let dst = self.g[v][e].dst;
-        self.g[v][e].cost + self.poterntial[src] - self.poterntial[dst]
+        let from = self.g[v][e].from;
+        let to = self.g[v][e].to;
+        self.g[v][e].cost + self.potential[from] - self.potential[to]
     }
     fn dual(
         &mut self,
@@ -188,7 +218,7 @@ where
                 if self.g[u][e].residual_cap() < delta {
                     continue;
                 }
-                let v = self.g[u][e].dst;
+                let v = self.g[u][e].to;
                 let new_dist = d + self.residual_cost(u, e);
                 if new_dist >= self.dist[v] {
                     continue;
@@ -199,7 +229,7 @@ where
             }
         }
         for v in 0..self.n {
-            self.poterntial[v] += farthest.min(self.dist[v]);
+            self.potential[v] += farthest.min(self.dist[v]);
         }
         if deficit_count > 0 {
             Some(farthest)
