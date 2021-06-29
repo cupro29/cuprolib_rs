@@ -1,0 +1,9 @@
+# 目次
+- [binaryindexedtree.rs](./BIT.md)
+- [dualsegtree.rs](./DualSegtree.md)
+- [lazysegtree.rs](./LazySegtree.md)
+- [maxflow.rs](./MaxFlow.md)
+- [mincostflow_capacity_scaling.rs](./MinCostFlowCapacityScaling.md)
+- [mincostflow.rs](./MinCostFlow.md)
+- [segtree.rs](./Segtree.md)
+- [unionfind.rs](./UnionFind.md)
