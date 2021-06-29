@@ -1,4 +1,4 @@
-# `DualSegtree<T, F>`
+# DualSegtree
 区間更新、1点取得。
 
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/dualsegtree.rs)
@@ -7,6 +7,7 @@
 ```rust
 pub fn new(n: usize, op: F, id: T) -> Self
 ```
+`F: Fn(T, T) -> T`
 
 ## from_vec
 ```rust

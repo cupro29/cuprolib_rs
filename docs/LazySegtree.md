@@ -1,4 +1,4 @@
-# `LazySegtree<S, T, F, G, H>`
+# LazySegtree
 区間更新、区間取得。
 
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/lazysegtree.rs)
@@ -6,6 +6,11 @@
 ## new
 ```rust
 pub fn new(n: usize, op: F, e: S, mapping: G, composition: H, id: T) -> Self
+```
+```rust
+F: Fn(S, S) -> S,
+G: Fn(T, S) -> S,
+H: Fn(T, T) -> T,
 ```
 
 ## set

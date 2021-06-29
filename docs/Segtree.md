@@ -1,4 +1,4 @@
-# `Segtree<T, F>`
+# Segtree
 1点更新、区間取得。
 
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/segtree.rs)
@@ -8,6 +8,7 @@
 ```rust
 pub fn new(n: usize, op: F, id: T) -> Self
 ```
+`F: Fn(T, T) -> T`
 
 ## from_vec
 ```rust

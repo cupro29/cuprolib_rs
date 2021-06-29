@@ -1,4 +1,4 @@
-# `MinCostFlowGraph<T, U>`
+# MinCostFlowGraph
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/mincostflow.rs)
 
 ## new

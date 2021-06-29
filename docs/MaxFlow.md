@@ -1,4 +1,4 @@
-# `MaxFlowGraph<Cap>`
+# MaxFlowGraph
 Dinic法。
 
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/maxflow.rs)

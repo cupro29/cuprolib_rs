@@ -1,4 +1,4 @@
-# `MinCostFlowGraph<Flow, Cost>`
+# MinCostFlowGraph
 容量スケーリング法。
 
 [src](https://github.com/cupro29/cuprolib_rs/blob/main/src/mincostflow_capacity_scaling.rs)
@@ -27,10 +27,22 @@ pub fn add_demand(&mut self, v: usize, amount: Flow)
 ```rust
 pub fn solve(&mut self) -> Result<Cost, Cost>
 ```
+解けたら `Ok(cost)` 、解けなかったら `Err(cost)` を返す。
 
 ## edges
 ```rust
 pub fn edges(&self) -> Vec<MinCostFlowEdge<Flow, Cost>>
+```
+```rust
+#[derive(Debug, Clone)]
+pub struct MinCostFlowEdge<Flow, Cost> {
+    pub from: usize,
+    pub to: usize,
+    pub flow: Flow,
+    pub upper: Flow,
+    pub lower: Flow,
+    pub cost: Cost,
+}
 ```
 
 ## potential
