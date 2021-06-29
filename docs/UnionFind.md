@@ -1,5 +1,5 @@
-# unionfind.rs
-[src](https://github.com/cupro29/cuprolib_rs/blob/document/src/unionfind.rs)
+# `UnionFind`
+[src](https://github.com/cupro29/cuprolib_rs/blob/main/src/unionfind.rs)
 
 Union-Find木。
 
