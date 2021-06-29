@@ -26,7 +26,7 @@ where
     {
         self.sum(r) - self.sum(l)
     }
-    pub fn sum(&self, idx: usize) -> T {
+    fn sum(&self, idx: usize) -> T {
         let mut res = T::default();
         let mut r = idx;
         while r > 0 {
