@@ -6,6 +6,7 @@ pub mod mincostflow;
 pub mod mincostflow_capacity_scaling;
 pub mod segtree;
 pub mod unionfind;
+pub mod weighteduf;
 #[cfg(test)]
 mod tests {
     #[test]
