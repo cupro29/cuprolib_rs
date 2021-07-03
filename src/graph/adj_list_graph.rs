@@ -2,10 +2,10 @@ use super::{DirectedEdge, Graph, WeigtedEdge};
 
 #[derive(Debug, Clone)]
 pub struct Edge {
-    pub to: usize,
+    to: usize,
 }
 pub struct AdjListGraph {
-    pub size: usize,
+    size: usize,
     graph: Vec<Vec<Edge>>,
 }
 impl DirectedEdge for Edge {
@@ -40,7 +40,7 @@ pub struct WEdge<T> {
     cost: T,
 }
 pub struct WeightedAdjListGraph<T> {
-    pub size: usize,
+    size: usize,
     graph: Vec<Vec<WEdge<T>>>,
 }
 impl<T> DirectedEdge for WEdge<T> {
