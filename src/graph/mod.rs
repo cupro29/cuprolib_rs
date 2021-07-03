@@ -1,5 +1,6 @@
 pub mod adj_list_graph;
 pub mod shortest_path;
+pub mod strongly_connected_components;
 
 pub trait Graph<'a, E: 'a + DirectedEdge> {
     type GraphDIter: Iterator<Item = &'a E>;
