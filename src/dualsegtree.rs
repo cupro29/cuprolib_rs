@@ -12,7 +12,7 @@ where
     F: Fn(T, T) -> T,
 {
     pub fn new(n: usize, op: F, id: T) -> Self {
-        DualSegtree::from_vec(&vec![id; n], op, id)
+        Self::from_vec(&vec![id; n], op, id)
     }
     pub fn from_vec(v: &[T], op: F, id: T) -> Self {
         let n = v.len();
