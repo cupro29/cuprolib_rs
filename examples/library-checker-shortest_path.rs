@@ -5,7 +5,7 @@ use proconio::input;
 
 fn main() {
     input! {
-        n: usize, m: usize, s: usize, t: usize,
+        n: usize, m: usize, s: usize, mut t: usize,
         abc: [(usize, usize, u64); m],
     }
     let mut g = WeightedAdjListGraph::new(n);
@@ -15,15 +15,15 @@ fn main() {
     let ans = dijkstra(&g, s);
     if let Some(dist) = ans[t] {
         let mut path = vec![];
-        let mut v = t;
-        while let Some(u) = ans[v].unwrap().1 {
-            path.push((u, v));
-            v = u;
+        while t != s {
+            let p = ans[t].unwrap().1.unwrap();
+            path.push((p, t));
+            t = p;
         }
         let l = path.len();
         println!("{} {}", dist.0, l);
-        for i in (0..l).rev() {
-            println!("{} {}", path[i].0, path[i].1);
+        for &(from, to) in path.iter().rev() {
+            println!("{} {}", from, to);
         }
     } else {
         println!("-1");
